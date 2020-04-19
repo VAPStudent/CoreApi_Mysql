@@ -1,0 +1,72 @@
+CREATE TABLE `hrmsdb`.`employees` (
+  `EmpSeqId` INT NOT NULL AUTO_INCREMENT,
+  `EmpId` INT NULL,
+  `EmpName` VARCHAR(100) NULL,
+  `DOB` DATETIME NULL,
+  `Mobile` VARCHAR(15) NULL,
+  `Email` VARCHAR(100) NULL,
+  `Latitude` DECIMAL(12,9) NULL,
+  `Longitude` DECIMAL(12,9) NULL,
+  PRIMARY KEY (`EmpSeqId`));
+----------------------------------------------------------  
+  
+INSERT INTO `employees` (`EmpId`,`EmpName`, `DOB`,`Mobile`,`Email`, `Latitude`, `Longitude`)
+VALUES
+(1000, 'Thenral', '1996-05-14 00:00:00','1234567890','thenral@vapstudent.in', '13.0546897', '80.1547895');
+
+INSERT INTO `employees` (`EmpId`,`EmpName`, `DOB`,`Mobile`,`Email`, `Latitude`, `Longitude`)
+VALUES 
+(1001, 'Poonkuzhali', '1991-10-22 00:00:00','1234567890','poonkuzhali@vapstudent.in', '13.1346897', '80.1347895');
+
+INSERT INTO `employees` (`EmpId`,`EmpName`, `DOB`,`Mobile`,`Email`, `Latitude`, `Longitude`)
+VALUES 
+(1002, 'Thananjayan', '1985-06-10 00:00:00','1234567890','thananjayan@vapstudent.in', '13.3446897', '80.3447895');
+
+
+----------------------------------------------------------
+
+drop procedure `GetAllEmp`;
+
+DELIMITER $$
+CREATE PROCEDURE `GetAllEmp`()
+BEGIN
+    SELECT EmpId, EmpName,  DATE_FORMAT(DOB, '%d-%b-%Y') as DOB, Mobile, Email, Latitude, Longitude  FROM Employees;
+END$$
+DELIMITER ;
+
+---------------------------------------------
+DROP Procedure if exists  `EmployeeInsUpd`;
+
+DELIMITER $$
+CREATE PROCEDURE EmployeeInsUpd(
+IN p_EmpId int,
+IN p_EmpName varchar(100),
+IN p_DOB DateTime, 
+IN p_Mobile varchar(10),
+IN p_Email varchar(100),
+IN p_Latitude decimal(12,9),
+IN p_Longitude decimal(12,9)
+)
+BEGIN	
+
+IF p_EmpId = 0 THEN		
+
+	Select IFNULL(Max(EmpId), 1000) + 1 into @MaxId from employees;    
+  	
+	INSERT INTO employees (EmpId, EmpName, DOB, Mobile, Email, Latitude, Longitude)	
+    VALUES (@MaxId, p_EmpName, p_DOB, p_Mobile, p_Email, p_Latitude, p_Longitude);
+    
+ELSE		
+	UPDATE employees SET 	
+	EmpName = p_EmpName,
+ 	DOB = p_DOB,
+	Mobile = p_Mobile, 
+	Email = p_Email,
+    Latitude = p_Latitude, 
+    Longitude = p_Longitude
+	WHERE EmpId = p_EmpId;    
+END IF;    
+
+END$$
+DELIMITER ;
+------------------------------------------
